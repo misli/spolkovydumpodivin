@@ -1,0 +1,59 @@
+version: '3.4'
+services:
+
+  leprikon:
+    image: misli/spolkovydumpodivin
+    build: .
+    depends_on:
+      - memcached
+      - mysql
+      - smtp
+    environment:
+      SECRET_KEY: secretkey
+      DATABASE_ENGINE: django.db.backends.mysql
+      DATABASE_HOST: ''
+      DATABASE_NAME: spolkovydumpodivin
+      DATABASE_PASSWORD: dbpassword
+      DATABASE_USER: spolkovydumpodivin
+      EMAIL_HOST: smtp
+      EMAIL_HOST_PASSWORD: emailpassword
+      EMAIL_HOST_USER: spolkovydumpodivin
+      EMAIL_SUBJECT_PREFIX: '[SD Podivín]'
+      MEMCACHED_KEY_PREFIX: spolkovydumpodivin
+      MEMCACHED_LOCATION: memcached:11211
+      ROCKETCHAT_URL: https://chat.spolkovydumpodivin.cz
+      SERVER_EMAIL: '"Spolkový dům Podivín" <info@spolkovydumpodivin.cz>'
+    ports:
+      - 80:80
+    volumes:
+      - ./.ipython:/root/.ipython
+      - ./data:/app/data
+      - ./media:/app/htdocs/media
+      - mysql:/var/run/mysqld
+
+  memcached:
+    image: memcached
+
+  mysql:
+    image: mariadb
+    environment:
+      MYSQL_DATABASE: spolkovydumpodivin
+      MYSQL_PASSWORD: dbpassword
+      MYSQL_ROOT_PASSWORD: rootdbpassword
+      MYSQL_USER: spolkovydumpodivin
+    volumes:
+      - mysql:/var/run/mysqld
+      - ./mysql:/var/lib/mysql
+
+  smtp:
+    image: catatnight/postfix
+    environment:
+      maildomain: spolkovydumpodivin.cz
+      smtp_user: spolkovydumpodivin:emailpassword
+    stdin_open: true
+    volumes:
+    - ./dkim:/etc/opendkim/domainkeys
+    tty: true
+
+volumes:
+  mysql:
