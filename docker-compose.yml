@@ -24,7 +24,7 @@ services:
       ROCKETCHAT_URL: https://chat.spolkovydumpodivin.cz
       SERVER_EMAIL: '"Spolkový dům Podivín" <info@spolkovydumpodivin.cz>'
     ports:
-      - 80:80
+      - 127.0.0.1:10070:80
     volumes:
       - ./.ipython:/root/.ipython
       - ./data:/app/data
